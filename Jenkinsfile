@@ -1,7 +1,7 @@
 pipeline {
-  agent {
-    docker { image 'node:latest' }
-  }
+    agent any
+    tools { nodejs "Angular Project" }
+    
   stages {
     stage('Install') {
       steps { sh 'npm install' }
