@@ -1,25 +1,41 @@
 pipeline {
     agent any
-     
-
-  stages {
-    stage('Install') {
-      steps { sh 'npm install' }
-    }
-
-    stage('Test') {
-      parallel {
-        stage('Static code analysis') {
-            steps { sh 'npm run-script lint' }
+    stages {
+        stage('Build') {
+            steps {
+                sh 'whoami '
+                sh 'npm install'
+ 
+                sh 'ng build'
+            }
         }
-        stage('Unit tests') {
-            steps { sh 'npm run-script test' }
-        }
-      }
-    }
+        stage('Deploy') {
+            steps {
+            
 
-    stage('Build') {
-      steps { sh 'npm run-script build' }
+                sh 'whoami'
+                sh 'cp -r dist/my-app/* /var/www/devenv.digiarenas.com/apps'
+                sh 'cd /var/www/devenv.digiarenas.com/apps/talha-app/ '
+            
+               
+              
+ 
+            }
+        }
+    
     }
-  }
+           post { 
+        success {
+            withEnv(['JENKINS_NODE_COOKIE=dontkillMe']) {
+                sh 'export JENKINS_NODE_COOKIE=dontKillMe'
+                sh 'export JENKINS_SERVER_COOKIE=dontKillMe'
+               
+                 
+                sh 'sudo pm2 start   "ng serve --host 0.0.0.0  --port 4201   " --name "mutlaq-app"'
+                sh 'sudo pm2 save'
+              }  
+        
+                 
+        }
+    }
 }
